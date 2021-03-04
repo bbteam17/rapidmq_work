@@ -24,11 +24,20 @@ namespace worker.Services
         }
 
         public async Task<List<User>> GetData() {
+            try
+            {
+                logger.LogInformation($"try call publisher api  {config.uri}");
+                var client = clientFactory.CreateClient(Config.SectionName);
+                var response = await client.GetAsync("User");
+                var result = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<User>>(result);
+            }
+            catch (Exception ex)
+            {
 
-            var client = clientFactory.CreateClient(Config.SectionName);
-            var response = await client.GetAsync("User");
-            var result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<User>>(result);
+                logger.LogError(ex.Message);
+            }
+            return new List<User>();
         }
     }
 }

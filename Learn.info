@@ -1,0 +1,91 @@
+
+ #Create api project
+ dotnet new webApi -o publishApi
+
+#Create Backround worker project 
+
+ dotnet new worker -o worker
+
+# Create new Sln 
+dotnet new sln
+
+# add project to sln 
+dotnet sln add   [projectName]
+
+
+
+#Add package to project 
+
+dotnet add package Newtonsoft.Json
+
+------------------------------------------------------------------------------------------
+# in worker project  if you need to bind configuration you need set like this. 
+
+return Host.CreateDefaultBuilder(args)
+                 
+                  .ConfigureServices((hostContext, services) =>
+                  {
+                      IConfiguration configuration = hostContext.Configuration;  //  <==========
+                      services.AddConfiguration(configuration);   //this custom extension method
+                      services.AddHostedService<Worker>();
+                  });
+
+
+
+
+
+
+
+#################################################################################################################
+ # Multi project  Debug launch 
+
+  "configurations": [
+        {
+            "name": "WebApi",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/publisherApi/bin/Debug/net5.0/publisherApi.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/publisherApi",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "worker",
+            "type": "coreclr",
+            "request": "launch",
+          
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/worker/bin/Debug/net5.0/worker.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/worker",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Both Console & Web API",
+            "configurations": [
+               
+                "worker",
+                "WebApi"
+            ]
+        }
+    ]

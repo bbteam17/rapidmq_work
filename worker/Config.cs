@@ -20,7 +20,10 @@ namespace worker
             services.AddHttpClient(Config.SectionName, c =>
             {
                 c.BaseAddress = new Uri(config.uri);
-            });
-        }
+            }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            ClientCertificateOptions = ClientCertificateOption.Manual,
+            ServerCertificateCustomValidationCallback =  (m, cert, c, p) =>  true 
+        });
     }
 }

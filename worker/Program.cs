@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using worker.Services;
+
 namespace worker
 {
     public class Program
@@ -27,6 +29,7 @@ namespace worker
                       IConfiguration configuration = hostContext.Configuration;
                       services.AddConfiguration(configuration);
                       services.AddHostedService<Worker>();
+                      services.AddSingleton<PubliserApiService>();
                   });
         }
 
